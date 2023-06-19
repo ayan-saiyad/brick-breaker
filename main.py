@@ -6,6 +6,9 @@ pygame.init()
 clock = pygame.time.Clock()
 fps = 60
 
+WIDTH = 500
+HEIGHT = 900
+
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (128, 128, 128)
@@ -15,9 +18,10 @@ green = (0, 255, 0)
 blue = (0, 0, 255)
 purple = (255, 0, 255)
 
-WIDTH = 500
-HEIGHT = 900
 player_x = 190
+player_direction = 0
+player_speed = 8
+
 ball_x = WIDTH / 2
 ball_y = HEIGHT - 30
 
@@ -51,6 +55,25 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+
+        if event.type == pygame.KEYDOWN:
+            if not active:
+                if event.key == pygame.K_SPACE:
+                    active = True
+            else:
+                if event.key == pygame.K_RIGHT:
+                    player_direction = 1
+                if event.key == pygame.K_LEFT:
+                    player_direction = -1
+
+        if event.type == pygame.KEYUP:
+            if event.type == active:
+                if event.key == pygame.K_RIGHT:
+                    player_direction = 0
+                if event.key == pygame.K_LEFT:
+                    player_direction = 0
+
+    player_x += player_direction * player_speed
 
     pygame.display.flip()
 pygame.quit()

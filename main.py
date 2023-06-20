@@ -44,6 +44,30 @@ def drawblocks(blocks):
         for j in range(len(blocks[i])):
             pygame.draw.rect(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
 
+def handle_quit_event():
+    global run
+    run = False
+
+def controls(event):
+    global active, ball_y_direction, ball_x_direction, player_direction
+    if not active:
+        if event.key == pygame.K_SPACE:
+            active = True
+            ball_y_direction = -1
+            ball_x_direction = random.choice([-1, 1])
+    else:
+        if event.key == pygame.K_RIGHT:
+            player_direction = 1
+        if event.key == pygame.K_LEFT:
+            player_direction = -1
+
+def handle_keyup_event(event):
+    global player_direction
+    if event.key == pygame.K_RIGHT:
+        player_direction = 0
+    if event.key == pygame.K_LEFT:
+        player_direction = 0
+
 
 run = True
 while run:
@@ -58,26 +82,11 @@ while run:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            run = False
-
-        if event.type == pygame.KEYDOWN:
-            if not active:
-                if event.key == pygame.K_SPACE:
-                    active = True
-                    ball_y_direction = -1
-                    bal_x_direction = random.choice([-1, 1])
-            else:
-                if event.key == pygame.K_RIGHT:
-                    player_direction = 1
-                if event.key == pygame.K_LEFT:
-                    player_direction = -1
-
-        if event.type == pygame.KEYUP:
-
-                if event.key == pygame.K_RIGHT:
-                    player_direction = 0
-                if event.key == pygame.K_LEFT:
-                    player_direction = 0
+            handle_quit_event()
+        elif event.type == pygame.KEYDOWN:
+            controls(event)
+        elif event.type == pygame.KEYUP:
+            handle_keyup_event(event)
 
     ball_x += ball_x_direction * ball_x_speed
     ball_y += ball_y_direction * ball_y_speed

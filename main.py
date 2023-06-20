@@ -91,6 +91,12 @@ while run:
     ball_x += ball_x_direction * ball_x_speed
     ball_y += ball_y_direction * ball_y_speed
 
+    if ball_x <= 10 or ball_x >= WIDTH - 10:
+        ball_x_direction *= -1
+    if ball.colliderect(player):
+        ball_y_direction *= -1
+
+
     player_x += player_direction * player_speed
 
     pygame.display.flip()

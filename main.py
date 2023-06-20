@@ -42,13 +42,9 @@ active = False
 def drawblocks(blocks):
     board_squares = []
     for i in range(len(blocks)):
-        row = []
         for j in range(len(blocks[i])):
-            block = pygame.draw.rect(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
-            row.append([block, (i, j)])
-
-        board_squares.append(row)
-
+             block = pygame.draw.rect(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
+             board_squares.append([block, (i, j)])
     return board_squares
 def handle_quit_event():
     global run

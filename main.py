@@ -40,10 +40,16 @@ active = False
 
 
 def drawblocks(blocks):
+    board_squares = []
     for i in range(len(blocks)):
+        row = []
         for j in range(len(blocks[i])):
-            pygame.draw.rect(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
+            block = pygame.draw.rect(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
+            row.append([block, (i, j)])
 
+        board_squares.append(row)
+
+    return board_squares
 def handle_quit_event():
     global run
     run = False
@@ -75,7 +81,7 @@ while run:
     screen.fill(gray)
     clock.tick(fps)
 
-    drawblocks(board)
+    squares = drawblocks(board)
 
     player = pygame.draw.rect(screen, black, [player_x, HEIGHT - 20, 120, 15])
     ball = pygame.draw.circle(screen, white, (ball_x, ball_y), 10)
@@ -93,6 +99,14 @@ while run:
 
     if ball_x <= 10 or ball_x >= WIDTH - 10:
         ball_x_direction *= -1
+
+    for i in range(len(squares)):
+        if ball.colliderect(squares[i][0]):
+            ball_y_direction *= -1
+            board[squares[i][1][0]][squares[i][1][1]] -= 1
+
+
+
     if ball.colliderect(player):
         ball_y_direction *= -1
 

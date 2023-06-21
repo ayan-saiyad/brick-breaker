@@ -1,6 +1,8 @@
 import pygame
 import random
 
+from brick import Brick
+
 pygame.init()
 
 clock = pygame.time.Clock()

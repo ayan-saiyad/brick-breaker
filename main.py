@@ -31,7 +31,7 @@ ball_y_direction = 0
 ball_x_speed = 5
 ball_y_speed = 5
 
-board = [[5, 5, 5, 5, 5], [4, 4, 4, 4, 4], [3, 3, 3, 3, 3], [2, 2, 2, 2, 2], [1, 1, 1, 1, 1]]
+strengths = [[5, 5, 5, 5, 5], [4, 4, 4, 4, 4], [3, 3, 3, 3, 3], [2, 2, 2, 2, 2], [1, 1, 1, 1, 1]]
 
 colors = [red, orange, green, blue, purple]
 
@@ -40,14 +40,21 @@ font = pygame.font.Font("freesansbold.ttf", 30)
 
 active = False
 
+#(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
+def create_blocks(arr):
+    bricks = []
+    for i in range(len(arr)):
+        row = []
 
-def drawblocks(blocks):
-    board_squares = []
-    for i in range(len(blocks)):
-        for j in range(len(blocks[i])):
-             block = pygame.draw.rect(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
-             board_squares.append([block, (i, j)])
-    return board_squares
+
+        for j in range(len(arr[i])):
+            block = Brick(j * 100, i * 40, 98, 38, arr[i][j])
+            row.append(block)
+
+        bricks.append(row)
+
+    return bricks
+
 def handle_quit_event():
     global run
     run = False
@@ -79,7 +86,7 @@ while run:
     screen.fill(gray)
     clock.tick(fps)
 
-    squares = drawblocks(board)
+    squares = create_blocks(strengths)
 
     player = pygame.draw.rect(screen, black, [player_x, HEIGHT - 20, 120, 15])
     ball = pygame.draw.circle(screen, white, (ball_x, ball_y), 10)

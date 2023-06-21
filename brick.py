@@ -1,5 +1,5 @@
 import pygame
-from main import screen
+
 
 class Brick:
 
@@ -12,6 +12,8 @@ class Brick:
     colors = [red, orange, green, blue, purple]
     def __init__(self, x, y, width, height, strength):
         self.rect = pygame.Rect(x, y, width, height)
+        self.x = x
+        self.y = y
         self.strength = strength
         self.color = Brick.colors[self.strength - 1]
 
@@ -19,7 +21,7 @@ class Brick:
         return self.strength
 
     def draw(self):
-        pygame.draw.rect(screen, self.color, self.rect)
+        pygame.draw.rect(pygame.display.set_mode([500, 900]), self.color, [self.x, self.y, 98, 38])
 
     def hit(self):
         self.strength -= 1

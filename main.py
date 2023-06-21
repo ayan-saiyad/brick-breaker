@@ -31,7 +31,11 @@ ball_y_direction = 0
 ball_x_speed = 5
 ball_y_speed = 5
 
-strengths = [[5, 5, 5, 5, 5], [4, 4, 4, 4, 4], [3, 3, 3, 3, 3], [2, 2, 2, 2, 2], [1, 1, 1, 1, 1]]
+strengths = [[1, 1, 1, 1, 1],
+             [2, 2, 2, 2, 2],
+             [3, 3, 3, 3, 3],
+             [4, 4, 4, 4, 4],
+             [5, 5, 5, 5, 5]]
 
 colors = [red, orange, green, blue, purple]
 
@@ -41,19 +45,23 @@ font = pygame.font.Font("freesansbold.ttf", 30)
 active = False
 
 #(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
-def create_blocks(arr):
-    bricks = []
+def create_bricks(arr):
+    brick_list = []
     for i in range(len(arr)):
         row = []
-
-
         for j in range(len(arr[i])):
             block = Brick(j * 100, i * 40, 98, 38, arr[i][j])
+            pygame.draw.rect(screen, colors[(strengths[i][j]) - 1], [j * 100, i * 40, 98, 38])
             row.append(block)
 
-        bricks.append(row)
+        brick_list.append(row)
 
-    return bricks
+    return brick_list
+
+def draw_bricks(arr):
+    for i in range(len(arr)):
+        for j in range(len(arr[i])):
+            arr[i][j].draw()
 
 def handle_quit_event():
     global run
@@ -86,7 +94,7 @@ while run:
     screen.fill(gray)
     clock.tick(fps)
 
-    squares = create_blocks(strengths)
+    bricks = create_bricks(strengths)
 
     player = pygame.draw.rect(screen, black, [player_x, HEIGHT - 20, 120, 15])
     ball = pygame.draw.circle(screen, white, (ball_x, ball_y), 10)
@@ -105,15 +113,15 @@ while run:
     if ball_x <= 10 or ball_x >= WIDTH - 10:
         ball_x_direction *= -1
 
-    for i in range(len(squares)):
-        if ball.colliderect(squares[i][0]):
-            ball_y_direction *= -1
-            board[squares[i][1][0]][squares[i][1][1]] -= 1
-
-
-
     if ball.colliderect(player):
         ball_y_direction *= -1
+
+    for i in range(len(bricks)):
+        for j in range(len(bricks[i])):
+            if ball.colliderect(bricks[i][j]):
+                dead = bricks[i][j].hit()
+                if dead:
+                    bricks[i].pop(j)
 
 
     player_x += player_direction * player_speed

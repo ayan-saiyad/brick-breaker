@@ -136,6 +136,8 @@ while run:
                     b.strength -= 1
                     if b.strength == 0:
                         bricks_to_remove.append(b)
+                    else:
+                        b.hit()
 #removing bricks once strength depletes
     for b in bricks_to_remove:
         row = next((r for r in bricks if b in r), None)

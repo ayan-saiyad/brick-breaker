@@ -16,3 +16,6 @@ class Brick:
         self.y = y
         self.strength = strength
         self.color = Brick.colors[self.strength - 1]
+
+    def hit(self):
+        self.color = Brick.colors[self.strength-1]

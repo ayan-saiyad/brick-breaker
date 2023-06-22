@@ -37,13 +37,15 @@ ball_y_speed = 5
 brick_width = 99
 brick_height = 30
 bricks = []
-strengths = [[3, 3, 3, 3, 3],
-             [2, 2, 2, 2, 2],
-             [2, 2, 2, 2, 2],
-             [1, 1, 1, 1, 1],
-             [1, 1, 1, 1, 1]]
+# strengths = [[3, 3, 3, 3, 3],
+#              [2, 2, 2, 2, 2],
+#              [2, 2, 2, 2, 2],
+#              [1, 1, 1, 1, 1],
+#              [1, 1, 1, 1, 1]]
 #for testing
 #strengths = [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
+# strengths full of 5:
+strengths = [[5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5]]
 
 colors = [red, orange, green, blue, purple]
 
@@ -134,10 +136,10 @@ while run:
                     ball_y_direction *= -1
                     collision += 1
                     b.strength -= 1
+                    b.hit()
                     if b.strength == 0:
                         bricks_to_remove.append(b)
-                    else:
-                        b.hit()
+
 #removing bricks once strength depletes
     for b in bricks_to_remove:
         row = next((r for r in bricks if b in r), None)

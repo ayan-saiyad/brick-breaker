@@ -25,6 +25,8 @@ player_x = 190
 player_direction = 0
 player_speed = 6
 
+collision = 0
+
 ball_x = WIDTH / 2
 ball_y = HEIGHT - 30
 ball_x_direction = 0
@@ -113,17 +115,21 @@ while run:
         ball_x_direction *= -1
 
     if ball.colliderect(player):
-        ball_y_direction *= -1
+        if not collision % 2 == 0:
+            ball_y_direction *= -1
+            collision += 1
 
     bricks_to_remove = []
     for row in bricks:
         for b in row:
             if ball.colliderect(b.rect):
-                ball_y_direction *= -1
-                b.strength -= 1
-                if b.strength == 0:
-                    bricks_to_remove.append(b)
-    # Remove the bricks that need to be removed
+                if collision % 2 == 0:
+                    ball_y_direction *= -1
+                    collision += 1
+                    b.strength -= 1
+                    if b.strength == 0:
+                        bricks_to_remove.append(b)
+
     for b in bricks_to_remove:
         row = next((r for r in bricks if b in r), None)
         if row:

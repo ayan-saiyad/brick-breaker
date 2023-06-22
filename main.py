@@ -42,6 +42,8 @@ strengths = [[5, 5, 5, 5, 5],
              [3, 3, 3, 3, 3],
              [2, 2, 2, 2, 2],
              [1, 1, 1, 1, 1]]
+#for testing
+#strengths = [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
 
 colors = [red, orange, green, blue, purple]
 
@@ -98,7 +100,7 @@ while run:
     player = pygame.draw.rect(screen, black, [player_x, HEIGHT - 20, 120, 15])
     ball = pygame.draw.circle(screen, white, (ball_x, ball_y), 10)
 
-
+#key press handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit_event()
@@ -106,18 +108,24 @@ while run:
             controls(event)
         elif event.type == pygame.KEYUP:
             keyup_event(event)
-
+#ball/player velocity
     ball_x += ball_x_direction * ball_x_speed
     ball_y += ball_y_direction * ball_y_speed
-
+    player_x += player_direction * player_speed
+#wall collision handling
     if ball_x <= 10 or ball_x >= WIDTH - 10:
         ball_x_direction *= -1
+#out of bounds handling (floor/ceiling)
+    if ball_y <= 10 or ball_y >= HEIGHT:
+        quit_event()
 
+#player collision handling
     if ball.colliderect(player):
         if not collision % 2 == 0:
             ball_y_direction *= -1
             collision += 1
 
+#brick collision
     bricks_to_remove = []
     for row in bricks:
         for b in row:
@@ -128,13 +136,11 @@ while run:
                     b.strength -= 1
                     if b.strength == 0:
                         bricks_to_remove.append(b)
-
+#removing bricks once strength depletes
     for b in bricks_to_remove:
         row = next((r for r in bricks if b in r), None)
         if row:
             row.remove(b)
-
-    player_x += player_direction * player_speed
 
     pygame.display.flip()
 pygame.quit()

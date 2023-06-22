@@ -16,9 +16,3 @@ class Brick:
         self.y = y
         self.strength = strength
         self.color = Brick.colors[self.strength - 1]
-
-    def hit(self):
-        self.strength -= 1
-        if self.strength == 0:
-            return True
-        return False

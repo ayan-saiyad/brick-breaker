@@ -56,9 +56,6 @@ def create_bricks():
 
         bricks.append(row)
 
-def draw_bricks(arr):
-    for brick in bricks:
-        pygame.draw.rect(screen, brick.color, brick.rect)
 
 def quit_event():
     global run

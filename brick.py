@@ -17,12 +17,6 @@ class Brick:
         self.strength = strength
         self.color = Brick.colors[self.strength - 1]
 
-    def get_strength(self):
-        return self.strength
-
-    def draw(self):
-        pygame.draw.rect(pygame.display.set_mode([500, 900]), self.color, [self.x, self.y, 98, 38])
-
     def hit(self):
         self.strength -= 1
         if self.strength == 0:

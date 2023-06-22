@@ -1,3 +1,4 @@
+import null as null
 import pygame
 import random
 
@@ -31,6 +32,9 @@ ball_y_direction = 0
 ball_x_speed = 5
 ball_y_speed = 5
 
+brick_width = 99
+brick_height = 30
+bricks = []
 strengths = [[1, 1, 1, 1, 1],
              [2, 2, 2, 2, 2],
              [3, 3, 3, 3, 3],
@@ -44,26 +48,19 @@ font = pygame.font.Font("freesansbold.ttf", 30)
 
 active = False
 
-#(screen, colors[(blocks[i][j]) - 1], [j * 100, i * 40, 98, 38])
-def create_bricks(arr):
-    brick_list = []
-    for i in range(len(arr)):
+def create_bricks():
+    for i in range(5):
         row = []
-        for j in range(len(arr[i])):
-            block = Brick(j * 100, i * 40, 98, 38, arr[i][j])
-            pygame.draw.rect(screen, colors[(strengths[i][j]) - 1], [j * 100, i * 40, 98, 38])
-            row.append(block)
+        for j in range(5):
+            row.append(Brick(i * brick_width + i, j * brick_height + j, brick_width, brick_height, strengths[j][i]))
 
-        brick_list.append(row)
-
-    return brick_list
+        bricks.append(row)
 
 def draw_bricks(arr):
-    for i in range(len(arr)):
-        for j in range(len(arr[i])):
-            arr[i][j].draw()
+    for brick in bricks:
+        pygame.draw.rect(screen, brick.color, brick.rect)
 
-def handle_quit_event():
+def quit_event():
     global run
     run = False
 
@@ -80,32 +77,38 @@ def controls(event):
         if event.key == pygame.K_LEFT:
             player_direction = -1
 
-def handle_keyup_event(event):
+def keyup_event(event):
     global player_direction
     if event.key == pygame.K_RIGHT:
         player_direction = 0
     if event.key == pygame.K_LEFT:
         player_direction = 0
 
+################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################
 
 run = True
-while run:
 
+
+while run:
+    create_bricks()
     screen.fill(gray)
     clock.tick(fps)
 
-    bricks = create_bricks(strengths)
+    for row in bricks:
+        for b in row:
+            pygame.draw.rect(screen, b.color, b.rect)
 
     player = pygame.draw.rect(screen, black, [player_x, HEIGHT - 20, 120, 15])
     ball = pygame.draw.circle(screen, white, (ball_x, ball_y), 10)
 
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            handle_quit_event()
+            quit_event()
         elif event.type == pygame.KEYDOWN:
             controls(event)
         elif event.type == pygame.KEYUP:
-            handle_keyup_event(event)
+            keyup_event(event)
 
     ball_x += ball_x_direction * ball_x_speed
     ball_y += ball_y_direction * ball_y_speed
@@ -116,12 +119,6 @@ while run:
     if ball.colliderect(player):
         ball_y_direction *= -1
 
-    for i in range(len(bricks)):
-        for j in range(len(bricks[i])):
-            if ball.colliderect(bricks[i][j]):
-                dead = bricks[i][j].hit()
-                if dead:
-                    bricks[i].pop(j)
 
 
     player_x += player_direction * player_speed

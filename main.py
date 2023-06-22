@@ -37,11 +37,11 @@ ball_y_speed = 5
 brick_width = 99
 brick_height = 30
 bricks = []
-strengths = [[1, 1, 1, 1, 1],
-             [2, 2, 2, 2, 2],
-             [3, 3, 3, 3, 3],
+strengths = [[5, 5, 5, 5, 5],
              [4, 4, 4, 4, 4],
-             [5, 5, 5, 5, 5]]
+             [3, 3, 3, 3, 3],
+             [2, 2, 2, 2, 2],
+             [1, 1, 1, 1, 1]]
 
 colors = [red, orange, green, blue, purple]
 
@@ -57,7 +57,6 @@ def create_bricks():
             row.append(Brick(i * brick_width + i, j * brick_height + j, brick_width, brick_height, strengths[j][i]))
 
         bricks.append(row)
-
 
 def quit_event():
     global run

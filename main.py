@@ -83,10 +83,10 @@ def keyup_event(event):
 
 ########################################################################################################################
 run = True
-
+create_bricks()
 
 while run:
-    create_bricks()
+
     screen.fill(gray)
     clock.tick(fps)
 
@@ -115,7 +115,19 @@ while run:
     if ball.colliderect(player):
         ball_y_direction *= -1
 
-
+    bricks_to_remove = []
+    for row in bricks:
+        for b in row:
+            if ball.colliderect(b.rect):
+                ball_y_direction *= -1
+                b.strength -= 1
+                if b.strength == 0:
+                    bricks_to_remove.append(b)
+    # Remove the bricks that need to be removed
+    for b in bricks_to_remove:
+        row = next((r for r in bricks if b in r), None)
+        if row:
+            row.remove(b)
 
     player_x += player_direction * player_speed
 

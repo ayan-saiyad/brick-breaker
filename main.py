@@ -37,15 +37,10 @@ ball_y_speed = 5
 brick_width = 99
 brick_height = 30
 bricks = []
-# strengths = [[3, 3, 3, 3, 3],
-#              [2, 2, 2, 2, 2],
-#              [2, 2, 2, 2, 2],
-#              [1, 1, 1, 1, 1],
-#              [1, 1, 1, 1, 1]]
+#strengths = [[3, 3, 3, 3, 3], [2, 2, 2, 2, 2],[2, 2, 2, 2, 2],[1, 1, 1, 1, 1],[1, 1, 1, 1, 1]]
 #for testing
-#strengths = [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
-# strengths full of 5:
-strengths = [[5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5]]
+strengths = [[1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1], [1, 1, 1, 1, 1]]
+#strengths = [[5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5], [5, 5, 5, 5, 5]]
 
 colors = [red, orange, green, blue, purple]
 
@@ -123,22 +118,37 @@ while run:
 
 #player collision handling
     if ball.colliderect(player):
-        if not collision % 2 == 0:
-            ball_y_direction *= -1
-            collision += 1
+        # Determine the center of the ball and the player
+        ball_center_x = ball.x + ball.width / 2
+        player_center_x = player.x + player.width / 2
+
+        # Calculate the difference in x coordinates
+        diff_x = ball_center_x - player_center_x
+
+        # Adjust the ball's direction based on the collision point
+        ball_x_direction = -1 if diff_x < 0 else 1  # Bounce left or right
+
+        ball_y_direction *= -1  # Bounce vertically
 
 #brick collision
     bricks_to_remove = []
     for row in bricks:
         for b in row:
             if ball.colliderect(b.rect):
-                if collision % 2 == 0:
-                    ball_y_direction *= -1
-                    collision += 1
-                    b.strength -= 1
-                    b.hit()
-                    if b.strength == 0:
-                        bricks_to_remove.append(b)
+                # Check for top and bottom collisions
+                if ball.bottom >= b.rect.top and ball.top <= b.rect.bottom:
+                    ball_y_direction *= -1  # Vertical bounce.
+
+                # Check for side collisions
+                elif ball.right >= b.rect.left and ball.left <= b.rect.right:
+                    ball_x_direction *= -1  # Horizontal bounce
+
+                collision += 1
+                b.strength -= 1
+                b.hit()
+                if b.strength == 0:
+                    bricks_to_remove.append(b)
+
 
 #removing bricks once strength depletes
     for b in bricks_to_remove:

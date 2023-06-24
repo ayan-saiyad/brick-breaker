@@ -25,7 +25,7 @@ player_x = 190
 player_direction = 0
 player_speed = 6
 
-collision = 0
+collision_occurred = False
 
 ball_x = WIDTH / 2
 ball_y = HEIGHT - 30
@@ -116,19 +116,23 @@ while run:
     if ball_y <= 10 or ball_y >= HEIGHT:
         quit_event()
 
+
 #player collision handling
-    if ball.colliderect(player):
-        # Determine the center of the ball and the player
-        ball_center_x = ball.x + ball.width / 2
-        player_center_x = player.x + player.width / 2
-
-        # Calculate the difference in x coordinates
-        diff_x = ball_center_x - player_center_x
-
-        # Adjust the ball's direction based on the collision point
-        ball_x_direction = -1 if diff_x < 0 else 1  # Bounce left or right
+      
+    if ball.colliderect(player) and not collision_occurred:
+        # # Determine the center of the ball and the player
+        # ball_center_x = ball.x + ball.width / 2
+        # player_center_x = player.x + player.width / 2
+        #
+        # # Calculate the difference in x coordinates
+        # diff_x = ball_center_x - player_center_x
+        #
+        # # Adjust the ball's direction based on the collision point
+        # ball_x_direction *= -1 if diff_x < 0 else 1  # Bounce left or right
 
         ball_y_direction *= -1  # Bounce vertically
+
+
 
 #brick collision
     bricks_to_remove = []
@@ -138,12 +142,13 @@ while run:
                 # Check for top and bottom collisions
                 if ball.bottom >= b.rect.top and ball.top <= b.rect.bottom:
                     ball_y_direction *= -1  # Vertical bounce.
+                    print("Bounce")
 
                 # Check for side collisions
                 elif ball.right >= b.rect.left and ball.left <= b.rect.right:
                     ball_x_direction *= -1  # Horizontal bounce
+                    print("h")
 
-                collision += 1
                 b.strength -= 1
                 b.hit()
                 if b.strength == 0:

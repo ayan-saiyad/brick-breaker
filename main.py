@@ -26,6 +26,8 @@ player_direction = 0
 player_speed = 6
 
 collision_occurred = False
+collision_timer = 0
+last_collision_time = pygame.time.get_ticks()
 
 ball_x = WIDTH / 2
 ball_y = HEIGHT - 30
@@ -119,18 +121,22 @@ while run:
 
 #player collision handling
       
-    if ball.colliderect(player) and not collision_occurred:
-        # # Determine the center of the ball and the player
-        # ball_center_x = ball.x + ball.width / 2
-        # player_center_x = player.x + player.width / 2
-        #
-        # # Calculate the difference in x coordinates
-        # diff_x = ball_center_x - player_center_x
-        #
-        # # Adjust the ball's direction based on the collision point
-        # ball_x_direction *= -1 if diff_x < 0 else 1  # Bounce left or right
+    if ball.colliderect(player):
 
-        ball_y_direction *= -1  # Bounce vertically
+        if not collision_occurred or pygame.time.get_ticks() - collision_timer >= 1000:
+            # Determine the center of the ball and the player
+            ball_center_x = ball.x + ball.width / 2
+            player_center_x = player.x + player.width / 2
+
+            # Calculate the difference in x coordinates
+            diff_x = ball_center_x - player_center_x
+
+            # Adjust the ball's direction based on the collision point
+            ball_x_direction *= -1 if diff_x < 0 else 1  # Bounce left or right
+
+            ball_y_direction *= -1
+            collision_occurred = True
+            collision_timer = pygame.time.get_ticks()
 
 
 
@@ -139,15 +145,19 @@ while run:
     for row in bricks:
         for b in row:
             if ball.colliderect(b.rect):
-                # Check for top and bottom collisions
-                if ball.bottom >= b.rect.top and ball.top <= b.rect.bottom:
-                    ball_y_direction *= -1  # Vertical bounce.
-                    print("Bounce")
+                # Calculate the collision point
+                collision_point = ball.colliderect(b.rect)
 
-                # Check for side collisions
-                elif ball.right >= b.rect.left and ball.left <= b.rect.right:
-                    ball_x_direction *= -1  # Horizontal bounce
-                    print("h")
+                # Calculate the angle of incidence based on the collision point
+                angle_of_incidence = 90 - (collision_point / b.rect.width) * 90
+
+                # Adjust the ball's velocity based on the angle of incidence
+                ball_x_speed = math.cos(math.radians(angle_of_incidence)) * ball_speed
+                ball_y_speed = -math.sin(math.radians(angle_of_incidence)) * ball_speed
+
+                # Update the ball's direction
+                ball_x_direction = 1 if ball_x_speed >= 0 else -1
+                ball_y_direction = -1
 
                 b.strength -= 1
                 b.hit()

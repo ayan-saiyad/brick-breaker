@@ -1,6 +1,7 @@
 import null as null
 import pygame
 import random
+import math
 
 from brick import Brick
 
@@ -35,6 +36,7 @@ ball_x_direction = 0
 ball_y_direction = 0
 ball_x_speed = 5
 ball_y_speed = 5
+ball_speed = 5
 
 brick_width = 99
 brick_height = 30
@@ -124,16 +126,18 @@ while run:
     if ball.colliderect(player):
 
         if not collision_occurred or pygame.time.get_ticks() - collision_timer >= 1000:
-            # Determine the center of the ball and the player
-            ball_center_x = ball.x + ball.width / 2
-            player_center_x = player.x + player.width / 2
+            # Calculate the collision point
+            collision_point = ball.colliderect(b.rect)
 
-            # Calculate the difference in x coordinates
-            diff_x = ball_center_x - player_center_x
+            # Calculate the angle of incidence based on the collision point
+            angle_of_incidence = 90 - (collision_point / b.rect.width) * 90
 
-            # Adjust the ball's direction based on the collision point
-            ball_x_direction *= -1 if diff_x < 0 else 1  # Bounce left or right
+            # Adjust the ball's velocity based on the angle of incidence
+            ball_x_speed = math.cos(math.radians(angle_of_incidence)) * ball_speed
+            ball_y_speed = math.sin(math.radians(angle_of_incidence)) * ball_speed
 
+            # Update the ball's direction
+            ball_x_direction = 1 if ball_x_speed >= 0 else -1
             ball_y_direction *= -1
             collision_occurred = True
             collision_timer = pygame.time.get_ticks()
@@ -157,7 +161,7 @@ while run:
 
                 # Update the ball's direction
                 ball_x_direction = 1 if ball_x_speed >= 0 else -1
-                ball_y_direction = -1
+                ball_y_direction *= -1
 
                 b.strength -= 1
                 b.hit()

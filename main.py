@@ -1,4 +1,3 @@
-import null as null
 import pygame
 import random
 import math
@@ -23,6 +22,7 @@ blue = (0, 0, 255)
 purple = (255, 0, 255)
 
 player_x = 190
+player_width = 120
 player_direction = 0
 player_speed = 6
 
@@ -98,7 +98,7 @@ while run:
         for b in row:
             pygame.draw.rect(screen, b.color, b.rect)
 
-    player = pygame.draw.rect(screen, black, [player_x, HEIGHT - 20, 120, 15])
+    player = pygame.draw.rect(screen, black, [player_x, HEIGHT - 20, player_width, 15])
     ball = pygame.draw.circle(screen, white, (ball_x, ball_y), 10)
 
 #key press handling
@@ -113,67 +113,64 @@ while run:
     ball_x += ball_x_direction * ball_x_speed
     ball_y += ball_y_direction * ball_y_speed
     player_x += player_direction * player_speed
+    player_x = max(0, min(WIDTH - player_width, player_x))
 #wall collision handling
     if ball_x <= 10 or ball_x >= WIDTH - 10:
         ball_x_direction *= -1
 #out of bounds handling (floor/ceiling)
-    if ball_y <= 10 or ball_y >= HEIGHT:
+    if ball_y <= 10:
+        ball_y_direction *= -1
+    if ball_y >= HEIGHT:
         quit_event()
 
 
 #player collision handling
-      
     if ball.colliderect(player):
 
         if not collision_occurred or pygame.time.get_ticks() - collision_timer >= 1000:
-            # Calculate the collision point
-            collision_point = ball.colliderect(b.rect)
+            # Where the ball hit the paddle, relative to its center (-1 = left edge, 1 = right edge)
+            offset = (ball_x - player.centerx) / (player.width / 2)
+            offset = max(-1, min(1, offset))
 
-            # Calculate the angle of incidence based on the collision point
-            angle_of_incidence = 90 - (collision_point / b.rect.width) * 90
+            # Angle from vertical scales with how far from center the ball hit
+            max_bounce_angle = 75
+            angle_of_incidence = offset * max_bounce_angle
 
-            # Adjust the ball's velocity based on the angle of incidence
-            ball_x_speed = math.cos(math.radians(angle_of_incidence)) * ball_speed
-            ball_y_speed = math.sin(math.radians(angle_of_incidence)) * ball_speed
+            # Recompute the velocity from the bounce angle; direction carries the sign
+            ball_x_speed = abs(math.sin(math.radians(angle_of_incidence)) * ball_speed)
+            ball_y_speed = abs(math.cos(math.radians(angle_of_incidence)) * ball_speed)
 
-            # Update the ball's direction
-            ball_x_direction = 1 if ball_x_speed >= 0 else -1
-            ball_y_direction *= -1
+            ball_x_direction = 1 if offset >= 0 else -1
+            ball_y_direction = -1
             collision_occurred = True
             collision_timer = pygame.time.get_ticks()
 
 
-
-#brick collision
-    bricks_to_remove = []
+#brick collision (resolve at most one brick per frame)
+    hit_brick = None
     for row in bricks:
         for b in row:
             if ball.colliderect(b.rect):
-                # Calculate the collision point
-                collision_point = ball.colliderect(b.rect)
+                hit_brick = b
+                break
+        if hit_brick:
+            break
 
-                # Calculate the angle of incidence based on the collision point
-                angle_of_incidence = 90 - (collision_point / b.rect.width) * 90
+    if hit_brick:
+        # Figure out which side of the brick was hit from how much the ball overlaps each axis
+        overlap_x = min(ball.right, hit_brick.rect.right) - max(ball.left, hit_brick.rect.left)
+        overlap_y = min(ball.bottom, hit_brick.rect.bottom) - max(ball.top, hit_brick.rect.top)
+        if overlap_x < overlap_y:
+            ball_x_direction *= -1
+        else:
+            ball_y_direction *= -1
 
-                # Adjust the ball's velocity based on the angle of incidence
-                ball_x_speed = math.cos(math.radians(angle_of_incidence)) * ball_speed
-                ball_y_speed = -math.sin(math.radians(angle_of_incidence)) * ball_speed
-
-                # Update the ball's direction
-                ball_x_direction = 1 if ball_x_speed >= 0 else -1
-                ball_y_direction *= -1
-
-                b.strength -= 1
-                b.hit()
-                if b.strength == 0:
-                    bricks_to_remove.append(b)
-
-
-#removing bricks once strength depletes
-    for b in bricks_to_remove:
-        row = next((r for r in bricks if b in r), None)
-        if row:
-            row.remove(b)
+        hit_brick.strength -= 1
+        hit_brick.hit()
+        if hit_brick.strength == 0:
+            row = next((r for r in bricks if hit_brick in r), None)
+            if row:
+                row.remove(hit_brick)
 
     pygame.display.flip()
 pygame.quit()
